@@ -43,7 +43,12 @@ struct node_ {
 typedef struct graph_ {
 	char topology_name[32]; //uniq name to every graph (network topo)
 	glthread_t node_list;
-};
+} graph_t;
+
+
+graph_t *create_new_graph(char *);
+node_t *create_graph_node(graph_t *, char *);
+void insert_link_between_two_nodes(node_t *, node_t *, char *, char *, int); 
 
 static inline node_t *
 get_nbr_node(interface_t *interface) {
