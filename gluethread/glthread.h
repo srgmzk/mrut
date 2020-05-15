@@ -92,13 +92,11 @@ glthread_priority_insert(glthread_t *base_glthread,
                          int (*comp_fn)(void *, void *),
                          int offset);
 
-
-#if 0
 void *
 gl_thread_search(glthread_t *base_glthread,
         void *(*thread_to_struct_fn)(glthread_t *),
         void *key,
         int (*comparison_fn)(void *, void *));
 
-#endif
+
 #endif /* __GLUETHREAD__ */

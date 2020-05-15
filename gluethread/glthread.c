@@ -34,6 +34,9 @@
 #include "glthread.h"
 #include <stdlib.h>
 
+#include <stdio.h>
+
+
 void
 init_glthread(glthread_t *glthread){
 
@@ -188,13 +191,22 @@ glthread_priority_insert(glthread_t *base_glthread,
     glthread_add_next(prev, glthread);
 } 
 
-#if 0
+
 void *
-gl_thread_search(glthread_t *base_glthread, 
-                 void *(*thread_to_struct_fn)(glthread_t *), 
-                 void *key, 
-                 int (*comparison_fn)(void *, void *)){
+gl_thread_search(glthread_t *base_glthread, 						// start of list
+                 void *(*thread_to_struct_fn)(glthread_t *), 		// point to list
+                 void *key, 										// object for search 
+                 int (*comparison_fn)(void *, void *)){				// cmp function
+    
+	glthread_t *curr = NULL;	
+	ITERATE_GLTHREAD_BEGIN(base_glthread, curr) {
+		//if(curr)
+		//	printf("curr node : %p \n", (void*)thread_to_struct_fn(curr));
+		printf("curr node : %p \n", curr);
+    } ITERATE_GLTHREAD_END(base_glthread, curr);
+ 
+
 
     return NULL;
 }
-#endif
+

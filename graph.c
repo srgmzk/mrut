@@ -80,3 +80,19 @@ create_graph_node(graph_t *graph, char *node_name) {
 } 
 
 
+int 
+node_name_cmp( void* node_name1, void* node_name2) {
+	
+	char *nn1 = (char *)node_name1;
+	char *nn2 = (char *)node_name2;
+	
+	if (strcmp(nn1, nn2)) 
+		return 0;
+	return 1;
+}
+
+
+
+
+
+

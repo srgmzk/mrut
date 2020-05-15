@@ -43,17 +43,22 @@ typedef struct _person{
 } person_t ;
 
 int 
-senior_citizen(person_t *p1, person_t *p2){
-
-    if(p1->age == p2->age) return 0;
-    if(p1->age < p2->age) return 1;
+senior_citizen(void *p1, void *p2){
+	person_t *pp1 = (person_t *)p1;
+	person_t *pp2 = (person_t *)p2;
+    if(pp1->age == pp2->age) return 0;
+    if(pp1->age < pp2->age) return 1;
     return -1;
 }
+/*
+#define offset(struct_name, fld_name) \
+	(unsigned int)&(((struct_name *)0)->fld_name)
+*/
 
 #define offset(struct_name, fld_name) \
-    (unsigned int)&(((struct_name *)0)->fld_name)
+    (size_t)&(((struct_name *)0)->fld_name)
 
-GLTHREAD_TO_STRUCT(thread_to_person, person_t, glthread, glthreadptr);
+GLTHREAD_TO_STRUCT(thread_to_person, person_t, glthread/*, glthreadptr*/);
 
 int main(int argc, char **argv){
 
