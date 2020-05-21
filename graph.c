@@ -19,7 +19,6 @@
 #include "graph.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdio.h>
 #include <string.h>
 
 void 
@@ -50,9 +49,11 @@ insert_link_between_two_nodes(node_t *node1,
 	empty_intf_slot = get_node_intf_available_slot(node1);
 	node1->intf[empty_intf_slot] = &link->intf1;
 
+	init_intf_nw_props(&(node1->intf[empty_intf_slot]->intf_nw_props));	
+
 	empty_intf_slot = get_node_intf_available_slot(node2);
 	node2->intf[empty_intf_slot] = &link->intf2;
-		
+	init_intf_nw_props(&(node2->intf[empty_intf_slot]->intf_nw_props));	
 }
 
 graph_t *
@@ -67,13 +68,14 @@ create_new_graph(char *topology_name) {
 	
 }
 
-
 node_t *
 create_graph_node(graph_t *graph, char *node_name) {
 	node_t *node = calloc(1, sizeof(node_t));
 	strncpy(node->node_name, node_name, NODE_NAME_SIZE);
 	node->node_name[NODE_NAME_SIZE] = '\0';
-	
+
+	init_node_nw_props(&(node->node_nw_props));
+
 	init_glthread(&node->graph_glue);
 	glthread_add_next(&graph->node_list, &node->graph_glue);
 	return node;
