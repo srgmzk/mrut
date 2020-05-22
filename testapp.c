@@ -17,7 +17,7 @@ int main(int argc, char **argv) {
 	printf("Node %s properties: \n", node->node_name);
 	printf(" - %s: %s \n", "neighbour", nbrNode->node_name);
 	printf(" - %s: %s \n", "is loopback addr config?", ((node->node_nw_props.is_lb_addr_config) ? "yes": "no"));
-	printf(" - %s: %s \n", "loopback addr", node->node_nw_props.lb_addr);
+	printf(" - %s: %s \n", "loopback addr", node->node_nw_props.lb_addr.ip_val);
 	
 	printf("\nInterface %s properties:\n",  iface->if_name);
 	printf(" - %s: %s \n", "mac addr", IF_MAC(iface));

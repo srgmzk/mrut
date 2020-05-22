@@ -69,6 +69,9 @@ init_intf_nw_props(intf_nw_props_t *intf_nw_props) {
 	
 }
 
+unsigned int convert_ip_from_str_to_int(char *ip_addr);
+void convert_ip_from_int_to_str(unsigned int ip_addr, char *output_buffer);
+
 /*GET shorthand Macros*/
 
 #define IF_MAC(intf_ptr) (intf_ptr->intf_nw_props.mac_addr.mac_val)

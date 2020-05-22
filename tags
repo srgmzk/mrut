@@ -4,7 +4,7 @@
 !_TAG_PROGRAM_NAME	Exuberant Ctags	//
 !_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
 !_TAG_PROGRAM_VERSION	5.9~svn20110310	//
--exclude	./Makefile	/^	ctags -R --exclude=course .\/*$/;"	m
+-exclude	./Makefile	/^	ctags -R --exclude=.\/course\/* .\/*$/;"	m
 BASE	./gluethread/glthread.h	68;"	d
 CC	./Makefile	/^CC=cc$/;"	m
 CFLAGS	./Makefile	/^CFLAGS=-g$/;"	m
@@ -24,9 +24,11 @@ OBJS	./Makefile	/^OBJS=gluethread\/glthread.o	\\$/;"	m
 _GRAPH_H_	./graph.h	7;"	d
 __GLUETHREAD__	./gluethread/glthread.h	34;"	d
 __NET__	./net.h	20;"	d
+__UTILS_H__	./utils.h	20;"	d
 _glthread	./gluethread/glthread.h	/^typedef struct _glthread{$/;"	s
 _person	./gluethread/test.c	/^typedef struct _person{$/;"	s	file:
 age	./gluethread/test.c	/^    int age;$/;"	m	struct:_person	file:
+apply_mask	./utils.c	/^apply_mask(char *prefix, char mask, char *str_prefix) {$/;"	f
 att_node	./graph.h	/^	struct node_ *att_node;$/;"	m	struct:interface_	typeref:struct:interface_::node_
 bool_t	./net.h	/^typedef int bool_t;$/;"	t
 build_first_topo	./topologies.c	/^build_first_topo() {$/;"	f
@@ -72,6 +74,7 @@ ip_addr_t	./net.h	/^} ip_addr_t;$/;"	t	typeref:struct:ip_addr_
 ip_val	./net.h	/^	char ip_val[16];$/;"	m	struct:ip_addr_
 is_ipaddr_config	./net.h	/^	bool_t is_ipaddr_config; \/*set to TRUE if ip addr is configured, intf operates in L3 mode if ip address is configured on it *\/$/;"	m	struct:intf_nw_props_
 is_lb_addr_config	./net.h	/^	bool_t is_lb_addr_config;$/;"	m	struct:node_nw_props_
+layer2_fill_with_broadcast_mac	./utils.c	/^layer2_fill_with_broadcast_mac(char *mac_array) {$/;"	f
 lb_addr	./net.h	/^	ip_addr_t lb_addr; \/* loopback address of node *\/$/;"	m	struct:node_nw_props_
 left	./gluethread/glthread.h	/^    struct _glthread *left;$/;"	m	struct:_glthread	typeref:struct:_glthread::_glthread
 link	./graph.h	/^	struct link_ *link;$/;"	m	struct:interface_	typeref:struct:interface_::link_

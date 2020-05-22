@@ -18,7 +18,7 @@
 
 #include "graph.h"
 #include <memory.h>
-//#include "utils.h"
+#include "utils.h"
 #include <stdio.h>
 #include <assert.h>
 
@@ -50,8 +50,8 @@ interface_assign_mac_address(interface_t *interface) {
 	hash_code_val *= hash_code(interface->if_name, IF_NAME_SIZE);
 	memset(IF_MAC(interface), 0, sizeof(IF_MAC(interface)));
 	memcpy(IF_MAC(interface), (char *)&hash_code_val, sizeof(unsigned int));
-	memcpy(IF_MAC(interface), mac, 18);
-	printf("interface %s MAC %s \n", interface->if_name, IF_MAC(interface));//, (char *)&hash_code_val);
+	//memcpy(IF_MAC(interface), mac, 18);
+	//printf("interface %s MAC %s \n", interface->if_name, IF_MAC(interface));//, (char *)&hash_code_val);
 }
 
 bool_t node_set_loopback_address(node_t *node, char *ip_addr) {
@@ -71,6 +71,7 @@ bool_t node_set_intf_ip_address(node_t *node, char *local_if, char *ip_addr, cha
 	if(!interface) assert(0);
 
 	strncpy(IF_IP(interface), ip_addr, 16);	
+		
 	IF_IP(interface)[15] = '\0';
 	interface->intf_nw_props.mask = mask;
 	interface->intf_nw_props.is_ipaddr_config = true;
@@ -80,4 +81,19 @@ bool_t node_set_intf_ip_address(node_t *node, char *local_if, char *ip_addr, cha
 bool_t node_unset_intf_ip_address(node_t *node, char *local_if) {
 	return true;
 }
+
+unsigned int convert_ip_from_str_to_int(char *ip_addr) {
+	unsigned buf[4] = {0,0,0,0};
+	/* (first octet * 16777216) + (second octet * 65536) + (third octet * 256) + (fourth octet) */
+	int ret = sscanf(in, "%d.%d.%d.%d", &buf[0], &buf[1], &buf[2], &buf[3]); 
+	if (out) 
+		return (buf[0]*16777216L + buf[1]*65536L + buf[2]*256L + buf[3]);
+	return 1;
+
+}
+
+void convert_ip_from_int_to_str(unsigned int ip_addr, char *output_buffer) {
+
+}
+
 
