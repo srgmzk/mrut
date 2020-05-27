@@ -30,6 +30,9 @@ insert_link_between_two_nodes(node_t *node1,
 
 	link_t *link = calloc(1, sizeof(link_t));
 	
+	int empty_intf_slot1 = 0;
+	int empty_intf_slot2 = 0;
+
 	/* Set interface properties */
 	strncpy(link->intf1.if_name, from_if_name, IF_NAME_SIZE);
 	link->intf1.if_name[IF_NAME_SIZE] = '\0';
@@ -43,17 +46,15 @@ insert_link_between_two_nodes(node_t *node1,
 	link->intf2.att_node = node2;
 	link->cost = cost;
 	
-	int empty_intf_slot;
-
 	/*Plugin interface ends into Node*/
-	empty_intf_slot = get_node_intf_available_slot(node1);
-	node1->intf[empty_intf_slot] = &link->intf1;
+	empty_intf_slot1 = get_node_intf_available_slot(node1);
+	node1->intf[empty_intf_slot1] = &link->intf1;
+	init_intf_nw_props(&(node1->intf[empty_intf_slot1]->intf_nw_props));	
 
-	init_intf_nw_props(&(node1->intf[empty_intf_slot]->intf_nw_props));	
+	empty_intf_slot2 = get_node_intf_available_slot(node2);
+	node2->intf[empty_intf_slot2] = &link->intf2;
+	init_intf_nw_props(&(node2->intf[empty_intf_slot2]->intf_nw_props));
 
-	empty_intf_slot = get_node_intf_available_slot(node2);
-	node2->intf[empty_intf_slot] = &link->intf2;
-	init_intf_nw_props(&(node2->intf[empty_intf_slot]->intf_nw_props));	
 }
 
 graph_t *

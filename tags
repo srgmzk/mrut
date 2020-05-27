@@ -8,19 +8,28 @@
 BASE	./gluethread/glthread.h	68;"	d
 CC	./Makefile	/^CC=cc$/;"	m
 CFLAGS	./Makefile	/^CFLAGS=-g$/;"	m
+CHKBIT	./tmp.c	33;"	d	file:
+CHKBIT	./utils.h	40;"	d
 GLTHREAD_GET_USER_DATA_FROM_OFFSET	./gluethread/glthread.h	80;"	d
 GLTHREAD_TO_STRUCT	./gluethread/glthread.h	60;"	d
-IF_IP	./net.h	75;"	d
-IF_MAC	./net.h	74;"	d
+IF_IP	./net.h	83;"	d
+IF_MAC	./net.h	82;"	d
+IF_NAME	./net.h	81;"	d
 IF_NAME_SIZE	./graph.h	17;"	d
 IS_GLTHREAD_LIST_EMPTY	./gluethread/glthread.h	57;"	d
-IS_INTF_L3_MODE	./net.h	83;"	d
+IS_INTF_L3_MODE	./net.h	91;"	d
+IS_MAC_BROADCAST_ADDR	./tmp.c	24;"	d	file:
+IS_MAC_BROADCAST_ADDR	./utils.h	27;"	d
 ITERATE_GLTHREAD_BEGIN	./gluethread/glthread.h	70;"	d
 ITERATE_GLTHREAD_END	./gluethread/glthread.h	77;"	d
 MAX_INTF_PER_NODE	./graph.h	18;"	d
-NODE_LO_ADDR	./net.h	76;"	d
+NODE_LO_ADDR	./net.h	84;"	d
 NODE_NAME_SIZE	./graph.h	16;"	d
 OBJS	./Makefile	/^OBJS=gluethread\/glthread.o	\\$/;"	m
+OCT2IP	./tmp.c	35;"	d	file:
+OCT2IP	./utils.h	42;"	d
+SUMIP	./tmp.c	34;"	d	file:
+SUMIP	./utils.h	41;"	d
 _GRAPH_H_	./graph.h	7;"	d
 __GLUETHREAD__	./gluethread/glthread.h	34;"	d
 __NET__	./net.h	20;"	d
@@ -28,15 +37,21 @@ __UTILS_H__	./utils.h	20;"	d
 _glthread	./gluethread/glthread.h	/^typedef struct _glthread{$/;"	s
 _person	./gluethread/test.c	/^typedef struct _person{$/;"	s	file:
 age	./gluethread/test.c	/^    int age;$/;"	m	struct:_person	file:
+apply_mask	./tmp.c	/^apply_mask(char *prefix, char mask, char *str_prefix) {$/;"	f
 apply_mask	./utils.c	/^apply_mask(char *prefix, char mask, char *str_prefix) {$/;"	f
 att_node	./graph.h	/^	struct node_ *att_node;$/;"	m	struct:interface_	typeref:struct:interface_::node_
 bool_t	./net.h	/^typedef int bool_t;$/;"	t
 build_first_topo	./topologies.c	/^build_first_topo() {$/;"	f
 container_of	./graph.h	20;"	d
+convert_ip_from_int_to_str	./net.c	/^convert_ip_from_int_to_str(unsigned int val, char *output_buffer) {$/;"	f
+convert_ip_from_int_to_str	./tmp.c	/^convert_ip_from_int_to_str(unsigned int val, char *output_buffer) {$/;"	f
+convert_ip_from_str_to_int	./net.c	/^unsigned int convert_ip_from_str_to_int(char *ip_addr) {$/;"	f
+convert_ip_from_str_to_int	./tmp.c	/^unsigned int convert_ip_from_str_to_int(char *ip_addr) {$/;"	f
 cost	./graph.h	/^	unsigned int cost;$/;"	m	struct:link_
 create_graph_node	./graph.c	/^create_graph_node(graph_t *graph, char *node_name) {$/;"	f
 create_new_graph	./graph.c	/^create_new_graph(char *topology_name) {$/;"	f
 delete_glthread_list	./gluethread/glthread.c	/^delete_glthread_list(glthread_t *base_glthread){$/;"	f
+dump_nw_graph	./net.c	/^dump_nw_graph(graph_t *graph) {$/;"	f
 get_glthread_list_count	./gluethread/glthread.c	/^get_glthread_list_count(glthread_t *base_glthread){$/;"	f
 get_nbr_node	./graph.h	/^get_nbr_node(interface_t *interface) {$/;"	f
 get_node_by_node_name	./graph.h	/^get_node_by_node_name(graph_t *topo, char *node_name) {$/;"	f
@@ -52,12 +67,15 @@ glthread_t	./gluethread/glthread.h	/^} glthread_t;$/;"	t	typeref:struct:_glthrea
 graph_	./graph.h	/^typedef struct graph_ {$/;"	s
 graph_glue	./graph.h	/^	glthread_t graph_glue;$/;"	m	struct:node_
 graph_t	./graph.h	/^} graph_t;$/;"	t	typeref:struct:graph_
+graph_t	./net.h	/^typedef struct graph_ graph_t;$/;"	t	typeref:struct:graph_
 hash_code	./net.c	/^hash_code(void *ptr, unsigned int size) {$/;"	f	file:
 if_name	./graph.h	/^	char if_name[IF_NAME_SIZE];$/;"	m	struct:interface_
 init_glthread	./gluethread/glthread.c	/^init_glthread(glthread_t *glthread){$/;"	f
 init_intf_nw_props	./net.h	/^init_intf_nw_props(intf_nw_props_t *intf_nw_props) {$/;"	f
 init_node_nw_props	./net.h	/^init_node_nw_props(node_nw_props_t *node_nw_props) {$/;"	f
 insert_link_between_two_nodes	./graph.c	/^insert_link_between_two_nodes(node_t *node1,$/;"	f
+int2bstr	./tmp.c	/^int2bstr(unsigned int val, char* bbuf, unsigned int size) {$/;"	f
+int2bstr	./utils.c	/^int2bstr(unsigned int val, char* bbuf, unsigned int size) {$/;"	f
 interface_	./graph.h	/^typedef struct interface_ {$/;"	s
 interface_assign_mac_address	./net.c	/^interface_assign_mac_address(interface_t *interface) {$/;"	f
 interface_t	./graph.h	/^} interface_t;$/;"	t	typeref:struct:interface_
@@ -68,13 +86,16 @@ intf2	./graph.h	/^	interface_t intf2;$/;"	m	struct:link_
 intf_nw_props	./graph.h	/^	intf_nw_props_t intf_nw_props;$/;"	m	struct:interface_
 intf_nw_props_	./net.h	/^typedef struct intf_nw_props_ {$/;"	s
 intf_nw_props_t	./net.h	/^} intf_nw_props_t;$/;"	t	typeref:struct:intf_nw_props_
+ip2oct	./tmp.c	/^ip2oct(char* in, unsigned* out) { 									$/;"	f
+ip2oct	./utils.c	/^ip2oct(char* in, unsigned* out) { 									$/;"	f
 ip_addr	./net.h	/^	ip_addr_t ip_addr;$/;"	m	struct:intf_nw_props_
 ip_addr_	./net.h	/^typedef struct ip_addr_ {$/;"	s
 ip_addr_t	./net.h	/^} ip_addr_t;$/;"	t	typeref:struct:ip_addr_
 ip_val	./net.h	/^	char ip_val[16];$/;"	m	struct:ip_addr_
 is_ipaddr_config	./net.h	/^	bool_t is_ipaddr_config; \/*set to TRUE if ip addr is configured, intf operates in L3 mode if ip address is configured on it *\/$/;"	m	struct:intf_nw_props_
 is_lb_addr_config	./net.h	/^	bool_t is_lb_addr_config;$/;"	m	struct:node_nw_props_
-layer2_fill_with_broadcast_mac	./utils.c	/^layer2_fill_with_broadcast_mac(char *mac_array) {$/;"	f
+layer2_fill_with_bradcast_nac	./tmp.c	/^layer2_fill_with_bradcast_nac(char *mac) {$/;"	f
+layer2_fill_with_broadcast_mac	./utils.c	/^layer2_fill_with_broadcast_mac(char *mac) {$/;"	f
 lb_addr	./net.h	/^	ip_addr_t lb_addr; \/* loopback address of node *\/$/;"	m	struct:node_nw_props_
 left	./gluethread/glthread.h	/^    struct _glthread *left;$/;"	m	struct:_glthread	typeref:struct:_glthread::_glthread
 link	./graph.h	/^	struct link_ *link;$/;"	m	struct:interface_	typeref:struct:interface_::link_
@@ -87,8 +108,10 @@ mac_addr_t	./net.h	/^} mac_addr_t;$/;"	t	typeref:struct:mac_addr_
 mac_val	./net.h	/^	char mac_val[18];$/;"	m	struct:mac_addr_
 main	./gluethread/test.c	/^int main(int argc, char **argv){$/;"	f
 main	./testapp.c	/^int main(int argc, char **argv) {$/;"	f
+main	./tmp.c	/^int main(void) {$/;"	f
 mask	./net.h	/^	char mask;$/;"	m	struct:intf_nw_props_
 node_	./graph.h	/^struct node_ {$/;"	s
+node_get_matching_subnet_interface	./net.c	/^node_get_matching_subnet_interface(node_t *node, char *ip_addr) {$/;"	f
 node_list	./graph.h	/^	glthread_t node_list;$/;"	m	struct:graph_
 node_name	./graph.h	/^	char node_name[NODE_NAME_SIZE];$/;"	m	struct:node_
 node_name_cmp	./graph.c	/^node_name_cmp( void* node_name1, void* node_name2) {$/;"	f

@@ -60,12 +60,8 @@ static inline node_t *
 get_nbr_node(interface_t *interface) {
 	node_t *selfnode = interface->att_node;
 	link_t *selflink = interface->link;
-	
-	link_t *l1 = container_of(interface, link_t, intf1);
-	link_t *l2 = container_of(interface, link_t, intf2);
-
-	return ( &(l1->intf1) == interface ) ? selflink->intf2.att_node : selflink->intf1.att_node; 
-		
+	return ( 0 == memcmp( &selflink->intf1, interface, sizeof(interface_t))) ? \
+			selflink->intf2.att_node : selflink->intf1.att_node; 
 };
 
 /* 
@@ -78,9 +74,11 @@ get_nbr_node(interface_t *interface) {
 static inline int 
 get_node_intf_available_slot(node_t *node) {
 	int i = 0;
-	while ( i < MAX_INTF_PER_NODE )
-		if ( node->intf[i] ) i++;
+	while ( i < MAX_INTF_PER_NODE ) {
+		
+		if ( node->intf[i] ) ++i;
 		else return i;
+	}
 	return -1;
 };
 

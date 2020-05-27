@@ -21,6 +21,9 @@
 #include "utils.h"
 #include <stdio.h>
 #include <assert.h>
+#include <stdlib.h>
+
+
 
 /*Just some Random number generator*/
 static unsigned int
@@ -33,6 +36,7 @@ hash_code(void *ptr, unsigned int size) {
 		str++;
 		i++;
 	}
+	//printf("value: %d \n", (unsigned int)value);
 	return value;
 } 
 
@@ -41,17 +45,29 @@ void
 interface_assign_mac_address(interface_t *interface) {
 	
 	node_t *node = interface->att_node;
-	//char mac[18] = "00:11:22:33:44:55";	
+	
 	if(!node)
 		return;
 
-	unsigned int hash_code_val = 0;
+	unsigned int hash_code_val = 0;//,  hash_code_val2 = 0;
+	char oct1[7] = "\0";
+
+	char oct2[7] = "\0";
 	hash_code_val = hash_code(node->node_name, NODE_NAME_SIZE);
+
+	snprintf(oct1, 7, "%x", hash_code_val);
+	
+	
 	hash_code_val *= hash_code(interface->if_name, IF_NAME_SIZE);
-	memset(IF_MAC(interface), 0, sizeof(IF_MAC(interface)));
-	memcpy(IF_MAC(interface), (char *)&hash_code_val, sizeof(unsigned int));
-	//memcpy(IF_MAC(interface), mac, 18);
-	//printf("interface %s MAC %s \n", interface->if_name, IF_MAC(interface));//, (char *)&hash_code_val);
+	
+	snprintf(oct2, 7, "%x", hash_code_val);
+	printf("oct1 %s oct2 %s\n", oct1, oct2);
+
+	sprintf(IF_MAC(interface), "%c%c:%c%c:%c%c:%c%c:%c%c:%c%c\0", 
+	'0','0', oct1[0],oct1[1], oct1[2],oct1[3], oct1[4],oct1[5], oct2[0],oct2[1], oct2[2],oct2[3]);
+	
+	printf("interface %s MAC %s\n", interface->if_name, IF_MAC(interface));
+
 }
 
 bool_t node_set_loopback_address(node_t *node, char *ip_addr) {
@@ -82,18 +98,84 @@ bool_t node_unset_intf_ip_address(node_t *node, char *local_if) {
 	return true;
 }
 
+
+/*
+	converts an ip address in integer form into its equivalent dot decimal form (A.B.C.D format) 
+*/
+void
+convert_ip_from_int_to_str(unsigned int val, char *output_buffer) {
+
+	unsigned buf[4] = {0,0,0,0};
+	char bbuf[33] = "\0";
+
+	int2bstr(val, bbuf, 33);
+	ip2oct(bbuf, buf);
+	OCT2IP(buf, output_buffer);
+	
+}
+
+/*
+	converts an ip address in string form (A.B.C.D format) into its equivalent 32-bit integer form.
+*/
+
 unsigned int convert_ip_from_str_to_int(char *ip_addr) {
 	unsigned buf[4] = {0,0,0,0};
-	/* (first octet * 16777216) + (second octet * 65536) + (third octet * 256) + (fourth octet) */
-	int ret = sscanf(in, "%d.%d.%d.%d", &buf[0], &buf[1], &buf[2], &buf[3]); 
-	if (out) 
-		return (buf[0]*16777216L + buf[1]*65536L + buf[2]*256L + buf[3]);
-	return 1;
-
-}
-
-void convert_ip_from_int_to_str(unsigned int ip_addr, char *output_buffer) {
-
+	int ret = sscanf(ip_addr, "%d.%d.%d.%d", &buf[0], &buf[1], &buf[2], &buf[3]); 
+	return (ret) ? SUMIP(buf) : 1;
 }
 
 
+interface_t *
+node_get_matching_subnet_interface(node_t *node, char *ip_addr) {
+
+	int i = 0;
+	char node_addr[16] = "\0";
+	char req_addr[16] = "\0";
+	while ( node->intf[i]) {
+ 		if ( node->intf[i]->intf_nw_props.is_ipaddr_config ) {	
+			apply_mask(	IF_IP(node->intf[i]), \
+						node->intf[i]->intf_nw_props.mask, \
+						node_addr);
+			apply_mask(	ip_addr, \
+						node->intf[i]->intf_nw_props.mask, \
+						req_addr);
+			
+			if ( strncmp(node_addr, req_addr, 16) == 0)
+				return (node->intf[i]);
+		}
+		i++;
+	}
+
+
+	return NULL;
+}
+
+
+//GLTHREAD_TO_STRUCT(thread_to_node, node_t, glthread/*, glthreadptr*/);
+
+void 
+dump_nw_graph(graph_t *graph) {
+	node_t *node;
+	int i;
+
+	glthread_t node_list = graph->node_list;
+    glthread_t *curr = NULL;
+    ITERATE_GLTHREAD_BEGIN(&node_list, curr){
+		node = thread_to_node(curr); 
+        printf(" > Node: %s\n", node->node_name);
+		i = 0;
+		while ( node->intf[i]) {
+			printf("\t* Interface %s (neighbor: %s )\n", IF_NAME(node->intf[i]), \
+														 get_nbr_node(node->intf[i])->node_name);
+			printf("\t\tmac: %s\n", IF_MAC(node->intf[i]));
+			printf("\t\tip: %s/%d\n", IF_IP(node->intf[i]), \
+								node->intf[i]->intf_nw_props.mask);
+			printf("\t\tloopback: %s\n", NODE_LO_ADDR(node));
+			i++;
+			
+		}
+    } ITERATE_GLTHREAD_END(&base_glthread, curr);
+ 
+	return; 
+}
+				

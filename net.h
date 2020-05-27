@@ -23,7 +23,7 @@
 #include <stdbool.h>
 
 typedef int bool_t;
-
+typedef struct graph_ graph_t;
 //Forward declaration
 typedef struct node_ node_t;
 typedef struct link_ link_t;
@@ -71,9 +71,14 @@ init_intf_nw_props(intf_nw_props_t *intf_nw_props) {
 
 unsigned int convert_ip_from_str_to_int(char *ip_addr);
 void convert_ip_from_int_to_str(unsigned int ip_addr, char *output_buffer);
+interface_t* node_get_matching_subnet_interface(node_t *node, char *ip_addr);
+void dump_nw_graph(graph_t *graph);
+
+
 
 /*GET shorthand Macros*/
 
+#define IF_NAME(intf_ptr) (intf_ptr->if_name)
 #define IF_MAC(intf_ptr) (intf_ptr->intf_nw_props.mac_addr.mac_val)
 #define IF_IP(intf_ptr)	 (intf_ptr->intf_nw_props.ip_addr.ip_val)
 #define NODE_LO_ADDR(node_ptr) (node_ptr->node_nw_props.lb_addr.ip_val)
