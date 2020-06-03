@@ -1,13 +1,15 @@
 #include "graph.h"
-#include <stdio.h>
 #include "utils.h"
+#include "CommandParser/libcli.h"
+#include <stdio.h>
+
 
 extern graph_t *build_first_topo();
-
-
+graph_t *topo = NULL;
 int main(int argc, char **argv) {
+
 	
-	graph_t *topo = build_first_topo();
+	topo = build_first_topo();
 	node_t *node = NULL;
 	interface_t *iface = NULL;
 	node_t *nbrNode =  NULL;
@@ -15,7 +17,6 @@ int main(int argc, char **argv) {
 	node = get_node_by_node_name(topo, "R0_re");
 	iface = get_node_if_by_name(node, "eth0/0");
 	interface_assign_mac_address(iface);
-//	nbrNode = get_nbr_node(iface);
 	iface = get_node_if_by_name(node, "eth0/4");
 	interface_assign_mac_address(iface);
 	
@@ -30,6 +31,8 @@ int main(int argc, char **argv) {
 	interface_assign_mac_address(iface);
 	iface = get_node_if_by_name(node, "eth0/5");
 	interface_assign_mac_address(iface);
+
+
 
 /*
 	char *in = "255.255.255.255";
@@ -69,8 +72,9 @@ int main(int argc, char **argv) {
 	}
 */
 
-
-	dump_nw_graph(topo);
+	nw_init_cli();
+	//dump_nw_graph(topo);
+	start_shell();
 	return 0;
 
 }

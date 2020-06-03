@@ -1,0 +1,12 @@
+.
+show topology
+?
+.
+.
+show ?
+show help
+.
+.
+run .
+run node R1 arp-resolve 100.0.0.1
+run node R1

@@ -1,15 +1,16 @@
 CC=cc
 CFLAGS=-g
-
+LIBS=-lpthread -L ./CommandParser -lcli
 OBJS=gluethread/glthread.o	\
 		utils.o				\
 		net.o				\
 		graph.o				\
-		topologies.o
+		topologies.o		\
+		nwcli.o				\
 
 
-testApp:testapp.o ${OBJS}
-	${CC} ${CFLAGS} testapp.o ${OBJS} -o testApp
+testApp:testapp.o ${OBJS} CommandParser/libcli.a
+	${CC} ${CFLAGS} testapp.o ${OBJS} -o testApp ${LIBS} 
 	ctags -R --exclude=./course/* ./*
 
 testapp.o:testapp.c
@@ -25,7 +26,10 @@ graph.o:graph.c
 	${CC} ${CFLAGS} -c -I . graph.c -o graph.o
 topologies.o:topologies.c
 	${CC} ${CFLAGS} -c -I . topologies.c -o topologies.o
-
+CommandParser/libcli.a:
+	(cd CommandParser; make)
+nwcli.o:nwcli.c
+	${CC} ${CFLAGS} -c -I . nwcli.c -o nwcli.o
 
 tags:
 	ctags -R --exclude=./course/* ./*
@@ -38,4 +42,9 @@ clean:
 	rm gluethread/glthread.o
 	rm testApp 
 	rm tags
-		
+	(cd CommandParser; make clean)
+
+all:
+	ctags -R --exclude=./course/* ./*
+	make
+	(cd CommandParser; make)
