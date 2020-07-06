@@ -59,14 +59,13 @@ interface_assign_mac_address(interface_t *interface) {
 	
 	
 	hash_code_val *= hash_code(interface->if_name, IF_NAME_SIZE);
-	
-	snprintf(oct2, 7, "%x", hash_code_val);
-	printf("oct1 %s oct2 %s\n", oct1, oct2);
 
+	snprintf(oct2, 7, "%x", hash_code_val);
+
+//	printf("oct1 %s oct2 %s\n", oct1, oct2);
 	sprintf(IF_MAC(interface), "%c%c:%c%c:%c%c:%c%c:%c%c:%c%c\0", 
 	'0','0', oct1[0],oct1[1], oct1[2],oct1[3], oct1[4],oct1[5], oct2[0],oct2[1], oct2[2],oct2[3]);
-	
-	printf("interface %s MAC %s\n", interface->if_name, IF_MAC(interface));
+//	printf("interface %s MAC %s\n", interface->if_name, IF_MAC(interface));
 
 }
 
@@ -151,7 +150,7 @@ node_get_matching_subnet_interface(node_t *node, char *ip_addr) {
 }
 
 
-//GLTHREAD_TO_STRUCT(thread_to_node, node_t, glthread/*, glthreadptr*/);
+//GLTHREAD_TO_STRUCT(gthread_to_node, node_t, glthread/*, glthreadptr*/);
 
 void 
 dump_nw_graph(graph_t *graph) {
@@ -161,7 +160,7 @@ dump_nw_graph(graph_t *graph) {
 	glthread_t node_list = graph->node_list;
     glthread_t *curr = NULL;
     ITERATE_GLTHREAD_BEGIN(&node_list, curr){
-		node = thread_to_node(curr); 
+		node = glthread_to_node(curr); 
         printf(" > Node: %s\n", node->node_name);
 		i = 0;
 		while ( node->intf[i]) {

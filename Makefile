@@ -6,7 +6,9 @@ OBJS=gluethread/glthread.o	\
 		net.o				\
 		graph.o				\
 		topologies.o		\
+		comm.c				\
 		nwcli.o				\
+		Layer2/layer2.o		\
 
 
 testApp:testapp.o ${OBJS} CommandParser/libcli.a
@@ -26,6 +28,11 @@ graph.o:graph.c
 	${CC} ${CFLAGS} -c -I . graph.c -o graph.o
 topologies.o:topologies.c
 	${CC} ${CFLAGS} -c -I . topologies.c -o topologies.o
+comm.o:comm.c
+	${CC} ${CFLAGS} -c -I . comm.c -o comm.o
+Layer2/layer2.o:Layer2/layer2.c
+	${CC} ${CFLAGS} -c -I Layer2 Layer2/layer2.c -o Layer2/layer2.o
+
 CommandParser/libcli.a:
 	(cd CommandParser; make)
 nwcli.o:nwcli.c
@@ -40,6 +47,7 @@ flow:
 clean:
 	rm *.o
 	rm gluethread/glthread.o
+	rm Layer2/layer2.o
 	rm testApp 
 	rm tags
 	(cd CommandParser; make clean)

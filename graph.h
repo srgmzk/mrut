@@ -43,6 +43,8 @@ struct node_ {
 	char node_name[NODE_NAME_SIZE];
 	interface_t* intf[MAX_INTF_PER_NODE];
 	glthread_t graph_glue;
+	unsigned int udp_port_number;
+	int udp_sock_fd;
 	node_nw_props_t node_nw_props;
 };
 
@@ -101,7 +103,7 @@ get_node_if_by_name(node_t *node, char *if_name) {
 
 /* function returns pointer node present in a graph list, searched by node	name. */
 
-GLTHREAD_TO_STRUCT(thread_to_node, node_t, graph_glue); /*, gltreadptr);*/
+GLTHREAD_TO_STRUCT(glthread_to_node, node_t, graph_glue); /*, gltreadptr);*/
 
 static inline node_t *
 get_node_by_node_name(graph_t *topo, char *node_name) {
@@ -111,11 +113,11 @@ get_node_by_node_name(graph_t *topo, char *node_name) {
 	glthread_t *curr = NULL;
 	
 
-	node_t *node = thread_to_node(base); 
-	if (node_name_cmp(node_name, thread_to_node(base)->node_name))
+	node_t *node = glthread_to_node(base); 
+	if (node_name_cmp(node_name, glthread_to_node(base)->node_name))
 		return node;
  	ITERATE_GLTHREAD_BEGIN(base, curr) {
-		node = thread_to_node(curr); 
+		node = glthread_to_node(curr); 
 		if (node_name_cmp(node_name, node->node_name))
 			return node;
 
@@ -123,7 +125,7 @@ get_node_by_node_name(graph_t *topo, char *node_name) {
  
 	return NULL;
 
-	//return gl_thread_search(base, (void *)thread_to_node(base), node_name, node_name_cmp); 
+	//return gl_thread_search(base, (void *)glthread_to_node(base), node_name, node_name_cmp); 
 		
 };
 
