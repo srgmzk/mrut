@@ -177,4 +177,20 @@ dump_nw_graph(graph_t *graph) {
  
 	return; 
 }
-				
+
+
+
+void *
+pkt_buffer_shift_right(char* pkt, int pkt_size, int empty_size) {
+
+	char *ret, *pkt_buf;
+	
+	pkt_buf = malloc(pkt_size*(sizeof(char)));
+	memcpy(pkt_buf, pkt, pkt_size);
+	ret = memset(pkt, empty_size, 0);
+	ret += empty_size;
+	memcpy(ret, pkt_buf, pkt_size);
+	free(pkt_buf);
+	return ret;
+
+}

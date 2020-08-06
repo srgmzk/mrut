@@ -54,33 +54,29 @@ validate_node_name(char *value){
     return VALIDATION_SUCCESS; /*else return VALIDATION_FAILED*/
 }
 
+
+//extern int
+//arp_handler(node_t *node, interface_t *interface, char *ip_addr);
+
 static int
-arp_handler(param_t *param, ser_buff_t *tlv_buf, op_mode enable_or_disable) { 
-	int CMDCODE = -1;
-
+arp_handler(param_t *param, ser_buff_t *tlv_buf, op_mode enable_or_disable) {
+	
+	node_t *node;
+	char *node_name;
+	char *ip_addr;
 	tlv_struct_t *tlv = NULL;
-	char *node_name = NULL;
-	char *ip_addr = NULL;
+	
+	TLV_LOOP_BEGIN(tlv_buf, tlv) {
+		
+		if(strncmp(tlv->leaf_id, "node_name", strlen("node-name")) == 0)
+			node_name = tlv->value;
+		else if(strncmp(tlv->leaf_id, "ip-address", strlen("ip-address")) == 0)
+			ip_addr = tlv->value;
+	} TLV_LOOP_END;
 
-	CMDCODE = EXTRACT_CMD_CODE(tlv_buf);
-
-	TLV_LOOP_BEGIN(tlv_buf, tlv){
-    	if(strncmp(tlv->leaf_id, "node_name", strlen("node_name")) == 0) { 
-            node_name = tlv->value;  
-        } else if(strncmp(tlv->leaf_id, "ip_address", strlen("ip-address")) == 0) { 
-          	ip_addr = tlv->value;                                              
-        }   
-    } TLV_LOOP_END;
-
-
-	switch(CMDCODE) {
-		case CMDCODE_RUN_NODE_ARP_RESOLVE:
-			printf("node_name = %s. ip-address = %s", node_name, ip_addr); 
-			break;
-		default:
-			;	
-	}
-
+	node = get_node_by_node_name(topo, node_name);
+	send_arp_broadcast_request(node, NULL, ip_addr);
+	
 	return 0;
 }
 
@@ -150,7 +146,6 @@ nw_init_cli() {
         static param_t node; 
 	}
 	support_cmd_negation(config);
-
 
 	
 }

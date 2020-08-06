@@ -21,6 +21,8 @@
 
 #include <stdio.h>
 #include <stdbool.h>
+#include <string.h>
+
 
 typedef int bool_t;
 typedef struct graph_ graph_t;
@@ -37,16 +39,33 @@ typedef struct mac_addr_ {
 	char mac_val[18];
 } mac_addr_t;
 
+/*Forward Declaration*/
+typedef struct arp_table_ arp_table_t;
+
 typedef struct node_nw_props_ {
+
+	/* Used to find various device types capabilities of  
+	 * the node and other features */
+	unsigned int flags;
+	
+	/* L2 capabilities */
+	arp_table_t *arp_table;
+
 	/*L3 properties*/
 	bool_t is_lb_addr_config;
 	ip_addr_t lb_addr; /* loopback address of node */
 } node_nw_props_t;
 
+
+extern void
+init_arp_table(arp_table_t **arp_table);
+
 static inline void
 init_node_nw_props(node_nw_props_t *node_nw_props) {
+	node_nw_props->flags = 0;
 	node_nw_props->is_lb_addr_config = false;
 	memset(node_nw_props->lb_addr.ip_val, 0, 16);
+	init_arp_table(&(node_nw_props->arp_table));
 }
 
 typedef struct intf_nw_props_ {
@@ -73,7 +92,7 @@ unsigned int convert_ip_from_str_to_int(char *ip_addr);
 void convert_ip_from_int_to_str(unsigned int ip_addr, char *output_buffer);
 interface_t* node_get_matching_subnet_interface(node_t *node, char *ip_addr);
 void dump_nw_graph(graph_t *graph);
-
+void *pkt_buffer_shift_right(char* pkt, int pkt_size, int empty_size);
 
 
 /*GET shorthand Macros*/
@@ -88,7 +107,7 @@ void dump_nw_graph(graph_t *graph);
 	Interface is said to be operating in L3 mode if it has an IP address configured.
  */
 
-#define IS_INTF_L3_MODE(intf_ptr) (intf_ptr->intf_nw_props.is_ipaddr_config)
+#define IS_INTF_L3_MODE(intf_ptr) (intf_ptr->intf_nw_props.is_ipaddr_config) 
 
 /*APIs to set Network Node properties*/
 void interface_assign_mac_address(interface_t *interface);

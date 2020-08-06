@@ -21,6 +21,7 @@
 
 extern graph_t *build_square_topo();
 extern graph_t *build_linear_topo();
+extern graph_t *build_first_topo();
 extern void nw_init_cli();
 
 graph_t *topo = NULL;
@@ -48,6 +49,11 @@ main(int argc, char** argv) {
 
 
 	printf("ETH_FCS: %d\n", ETH_FCS(l2hdr, 8));
+
+
+//	char msg[] = "Hello, how are you\0";
+//	send_pkt_out(msg, strlen(msg), iface);	
+	send_pkt_flood(node, iface, msg, strlen(msg));
 
 
 //	start_shell();

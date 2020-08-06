@@ -18,6 +18,7 @@
 
 #include "comm.h"
 #include "graph.h"
+#include "net.h"
 #include <sys/socket.h>
 #include <pthread.h>
 #include <netinet/in.h>
@@ -205,6 +206,10 @@ send_pkt_flood(node_t* node, interface_t* exempted_intf, char* pkt, unsigned int
 	}
 } 
 
+extern void
+layer2_frame_recv(node_t *node, interface_t *interface,
+					char *pkt, unsigned int pkt_size);
+
 
 int
 pkt_receive(node_t *node, interface_t *interface,
@@ -213,7 +218,24 @@ pkt_receive(node_t *node, interface_t *interface,
 	/* Entry point into data link layer from physical layer
 	 * Ingress journey of the packet starts from 
 	 * here in the TCP/IP stack */
-	printf("\nmsg recvd = %s, on node = %s, IIF = %s\n", pkt, node->node_name, interface->if_name);
+	int i = 0;
+	
+	for(i=0; i < MAX_PACKET_BUFFER_SIZE; i++) {
+		printf("%x ", pkt[i]);
+	}
+
+	pkt = pkt_buffer_shift_right(pkt, pkt_size, 
+			MAX_PACKET_BUFFER_SIZE - IF_NAME_SIZE);
+	printf("\n");	
+	for(i=0; i < MAX_PACKET_BUFFER_SIZE; i++) {
+		printf("%x ", pkt[i]);
+	}
+
+	/* Do further processing of the pkt here */
+	layer2_frame_recv(node, interface, pkt, pkt_size);
+		
+
+//	printf("\nmsg recvd = %s, on node = %s, IIF = %s\n", pkt, node->node_name, interface->if_name);
 	
 	return 0;
 
