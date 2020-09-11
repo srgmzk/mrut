@@ -40,7 +40,7 @@ typedef struct arp_hdr_ {
     short op_code;          /* req or reply */
     mac_addr_t src_mac;      /* MAC of OIF interface */
     unsigned int src_ip;    /* IP of OIF */
-    mac_addr_t dst_mac;      /* ? */
+    mac_addr_t dst_mac;      /*  */
     unsigned int dst_ip;    /* IP for which ARP is being resolved */
 } arp_hdr_t;
 
@@ -125,6 +125,74 @@ dump_arp_table(arp_table_t *arp_table);
 
 void
 arp_table_update_from_arp_reply(arp_table_t *arp_table, arp_hdr_t *arp_hdr, interface_t *iif);
+
+void
+send_arp_broadcast_request(node_t *node, interface_t *oif, char *ip_addr);
+	
+void
+node_set_intf_l2_mode(node_t *node, char *intf_name, intf_l2_mode_t intf_l2_mode);
+	
+/*fn to get access to ethernet payload address*/
+static inline char *
+GET_ETHERNET_HDR_PAYLOAD(ethernet_hdr_t *ethernet_hdr){
+
+      return ethernet_hdr->payload;
+}
+
+/* VLAN support */
+#pragma pack(push, 1)
+/* Vlan 802.1q 4 byte hdr */
+typedef struct vlan_8021q_hdr_{
+	unsigned short tpid; /* = 0x8100 */
+	short tci_pcp : 3;	 /* initial 4 bits not used in this course */
+	short tci_dei : 1;	 /* not used */
+	short tci_vid : 12;	 /* Tagged vlan id */
+} vlan_8021q_hdr_t;
+
+typedef struct vlan_ethernet_hdr_{
+	mac_add_t dst_mac;
+	mac_add_t src_mac;
+	vlan_8021q_hdr_t vlan_8021q_hdr;
+	unsigned short type;
+	char payload[248]; /* max allowed 1500 */
+	unsigned int FCS;
+} vlan_ethernet_hdr_t;
+#pragma pack(pop)
+
+
+/* Return NULL if Input ethernet hdr is not vlan tagged, else return pointer to 801.1q vlan hdr 
+embedded in ethernet hdr*/
+
+static inline vlan_8021q_hdr_t *
+is_pkt_vlan_tagged(ethernet_hdr_t* ethernet_hdr) {
+	vlan_ethernet_hdr_t* vlan_eth_hdr;
+	if (ethernet_hdr->type != 0x8100)	
+		return NULL;
+	vlan_eth_hdr = (vlan_ethernet_hdr_t *)ethernet_hdr;
+	return  vlan_eth_hdr->vlan_8021q_hdr;
+}
+
+/* return vlan id present in 802.1Q vlan hdr which is passed as an argument */
+static inline unsigned int
+GET_802_1Q_VLAN_ID(vlan_8021q_hdr_t *vlan_8021q_hdr) {
+
+}
+
+/* a macro ETH_FCS returned the FCS value present in vlan ethernet hdr */
+#define VLAN_ETH_FCS(vlan_eth_hdr_ptr, payload size)
+
+/* macro for vlan tagged ethernet hdr excluding payload size */ 
+#define VLAN_ETH_HDR_SIZE_EXCL_PAYLOAD
+
+
+/* return the pointer to the start of the payload present in the ethernet hdr pointer passed as an argument*/
+static inline char *
+GET_ETHERNET_HDR_PAYLOAD(ethernet_hdr_t *ethernet_hdr) {
+
+}
+
+
+
 
 #endif /*__LAYER2__*/
 

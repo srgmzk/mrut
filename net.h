@@ -26,6 +26,7 @@
 
 typedef int bool_t;
 typedef struct graph_ graph_t;
+
 //Forward declaration
 typedef struct node_ node_t;
 typedef struct link_ link_t;
@@ -39,8 +40,27 @@ typedef struct mac_addr_ {
 	char mac_val[18];
 } mac_addr_t;
 
+typedef enum {
+	ACCESS,
+	TRUNK,
+	L2_MODE_UNKNOWN	
+} intf_l2_mode_t;
+	
+static inline char *
+intf_l2_mode_str(intf_l2_mode_t intf_l2_mode) {
+	switch(intf_l2_mode) {
+		case ACCESS:
+			return "access";
+		case TRUNK:
+			return "trunk";
+		default:
+			return "L2_MODE_UNKNOWN";
+	}
+}
+
 /*Forward Declaration*/
 typedef struct arp_table_ arp_table_t;
+typedef struct mac_table_ mac_table_t;
 
 typedef struct node_nw_props_ {
 
@@ -50,6 +70,7 @@ typedef struct node_nw_props_ {
 	
 	/* L2 capabilities */
 	arp_table_t *arp_table;
+	mac_table_t *mac_table;
 
 	/*L3 properties*/
 	bool_t is_lb_addr_config;
@@ -60,17 +81,24 @@ typedef struct node_nw_props_ {
 extern void
 init_arp_table(arp_table_t **arp_table);
 
+extern void
+init_mac_table(mac_table_t **mac_table);
+
+
+
 static inline void
 init_node_nw_props(node_nw_props_t *node_nw_props) {
 	node_nw_props->flags = 0;
 	node_nw_props->is_lb_addr_config = false;
 	memset(node_nw_props->lb_addr.ip_val, 0, 16);
 	init_arp_table(&(node_nw_props->arp_table));
+	init_mac_table(&(node_nw_props->mac_table));
 }
 
 typedef struct intf_nw_props_ {
 	/* L2 properties */
 	mac_addr_t mac_addr; /*MAC are hard burnt in interface NIC*/
+	intf_l2_mode_t intf_l2_mode; /*if ip-address is configured on this interface, then this should be set to UNKNOWN*/
 	/* L3 properties */
 	bool_t is_ipaddr_config; /*set to TRUE if ip addr is configured, intf operates in L3 mode if ip address is configured on it */
 	ip_addr_t ip_addr;
@@ -84,7 +112,6 @@ init_intf_nw_props(intf_nw_props_t *intf_nw_props) {
 	intf_nw_props->is_ipaddr_config = false;
 	memset(intf_nw_props->ip_addr.ip_val,0,16);
 	intf_nw_props->mask = 0;
-	
 	
 }
 
@@ -100,7 +127,9 @@ void *pkt_buffer_shift_right(char* pkt, int pkt_size, int empty_size);
 #define IF_NAME(intf_ptr) (intf_ptr->if_name)
 #define IF_MAC(intf_ptr) (intf_ptr->intf_nw_props.mac_addr.mac_val)
 #define IF_IP(intf_ptr)	 (intf_ptr->intf_nw_props.ip_addr.ip_val)
+#define IF_L2_MODE(intf_ptr) (intf_ptr->intf_nw_props.intf_l2_mode)
 #define NODE_LO_ADDR(node_ptr) (node_ptr->node_nw_props.lb_addr.ip_val)
+#define NODE_ARP_TABLE(node_ptr)    (node_ptr->node_nw_props.arp_table)
 
 /* 
 	evaluate to TRUE, if ip address is configured on an interface.
@@ -114,7 +143,7 @@ void interface_assign_mac_address(interface_t *interface);
 bool_t node_set_loopback_address(node_t *node, char *ip_addr);
 bool_t node_set_intf_ip_address(node_t *node, char *local_if, char *ip_addr, char mask);
 bool_t node_unset_intf_ip_address(node_t *node, char *local_if);
-	
+
 
 #endif /*__NET__*/
 

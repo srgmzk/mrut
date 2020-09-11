@@ -9,6 +9,8 @@ OBJS=gluethread/glthread.o	\
 		comm.c				\
 		nwcli.o				\
 		Layer2/layer2.o		\
+		Layer2/l2switch.o	\
+		pkt_dump.o			\
 
 
 testApp:testapp.o ${OBJS} CommandParser/libcli.a
@@ -31,7 +33,13 @@ topologies.o:topologies.c
 comm.o:comm.c
 	${CC} ${CFLAGS} -c -I . comm.c -o comm.o
 Layer2/layer2.o:Layer2/layer2.c
+	${CC} ${CFLAGS} -c -I Layer2 Layer2/l2switch.c -o Layer2/l2switch.o
+Layer2/layer2.o:Layer2/layer2.c
 	${CC} ${CFLAGS} -c -I Layer2 Layer2/layer2.c -o Layer2/layer2.o
+pkt_dump.o:pkt_dump.c
+	${CC} ${CFLAGS} -c -I . pkt_dump.c -o pkt_dump.o
+
+
 
 CommandParser/libcli.a:
 	(cd CommandParser; make)

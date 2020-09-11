@@ -24,6 +24,7 @@
 #include <netinet/in.h>
 #include <memory.h>
 #include <stdio.h>
+#include <unistd.h>
 #include <stdlib.h>
 #include <errno.h>
 #include <netdb.h> /*for struct hostent*/
@@ -64,7 +65,6 @@ static void _pkt_receive(node_t *receiving_node,
 		
 	char *recv_intf_name = pkt_with_aux_data;
 	interface_t *recv_intf = get_node_if_by_name(receiving_node, recv_intf_name);
-	
 	if(!recv_intf) {
 		printf("Error: Pkt recvd on unknown interface %s on node %s\n",
 					recv_intf->if_name, receiving_node->node_name);
@@ -94,7 +94,7 @@ _network_start_pkt_receiver_thread(void *arg) {
 	FD_ZERO(&active_sock_fd_set);
 	
 	struct sockaddr_in sender_addr;
-	
+		
 	ITERATE_GLTHREAD_BEGIN(&topo->node_list, curr){
 		node = glthread_to_node(curr);
 
@@ -136,7 +136,7 @@ _send_pkt_out(int sock_fd, char *pkt_data, unsigned int pkt_size, unsigned int d
 	dest_addr.sin_family = AF_INET;
 	dest_addr.sin_port = dst_udp_port_no;
 	dest_addr.sin_addr = *((struct in_addr *)host->h_addr);
-	
+//	printf("pkt data out: %s\n", pkt_data);	
 	rc = sendto(sock_fd, pkt_data, pkt_size, 0, (struct sockaddr *)&dest_addr, sizeof(struct sockaddr));
 		
 	return rc;	
@@ -205,6 +205,32 @@ send_pkt_flood(node_t* node, interface_t* exempted_intf, char* pkt, unsigned int
 
 	}
 } 
+
+/*
+	func flood the packet out of all local l2 interface of an L2 switc
+*/
+
+
+int 
+send_pkt_flood_l2_intf_only( node_t * node,
+							 interface_t * exempted_intf, /* interface on which the frame was recvd be L2 switch */
+							 char * pkt,
+							 unsigned int pkt_size) 
+{
+	int i = 0;	
+
+	while ( node->intf[i] ) {
+		
+		if ( strcmp(node->intf[i]->if_name, exempted_intf->if_name) ) 
+			if( IF_L2_MODE(node->intf[i]) == ACCESS || IF_L2_MODE(node->intf[i]) == TRUNK ) 
+				send_pkt_out(pkt, pkt_size, node->intf[i]);
+		
+		i++;
+
+	}
+
+}
+
 
 extern void
 layer2_frame_recv(node_t *node, interface_t *interface,

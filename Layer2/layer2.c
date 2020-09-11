@@ -21,6 +21,7 @@
 #include <stdlib.h>
 #include <sys/socket.h>
 #include <assert.h>
+#include <arpa/inet.h>
 
 
 /* A Routine to resolve ARP out of oif */
@@ -40,7 +41,7 @@ send_arp_broadcast_request(node_t *node, interface_t *oif, char *ip_addr) {
 		}
 	}
 	/* STEP 1: Prepare ethernet hdr */	
-	layer2_fill_with_bradcast_mac(ethernet_hdr->dst_mac.mac_val);
+	layer2_fill_with_broadcast_mac(ethernet_hdr->dst_mac.mac_val);
 	memcpy(ethernet_hdr->src_mac.mac_val, IF_MAC(oif), sizeof(mac_addr_t));
 	ethernet_hdr->type = ARP_MSG;
 
@@ -163,7 +164,9 @@ l2_framee_recv_qualify_on_interface(interface_t *interface, ethernet_hdr_t *ethe
 	return 0;
 }
 
-
+extern void 
+l2_switch_recv_frame(interface_t *interface,
+						char *pkt, unsigned int pkt_size);
 void
 layer2_frame_recv(node_t *node, interface_t *interface,
 				char *pkt, unsigned int pkt_size) {
@@ -171,31 +174,38 @@ layer2_frame_recv(node_t *node, interface_t *interface,
 	/* Entry point into TCP/IP stack from bottom */
 
 	ethernet_hdr_t *ethernet_hdr = (ethernet_hdr_t *)pkt;
-	if (l2_frame_recv_qualify_on_interface(interface, ethernet_hdr) == 0 ) {
+	if ( l2_frame_recv_qualify_on_interface(interface, ethernet_hdr) == 0 ) {
 		printf("L2 Frame Rejected");
 		return;
 	}
 	
 	printf("L2 Frame Accepted\n");	
-	switch(ethernet_hdr->type) {
-		case ARP_MSG:
-		{
-			arp_hdr_t *arp_hdr = (arp_hdr_t *)( ethernet_hdr->payload );
-			switch(arp_hdr->op_code) {
-				case ARP_BROAD_REQ:
-					process_arp_broadcast_request(node, interface, ethernet_hdr);
+		if ( IS_INTF_L3_MODE(interface) ) {
+			switch(ethernet_hdr->type) {
+				case ARP_MSG:
+				{
+					arp_hdr_t *arp_hdr = (arp_hdr_t *)( ethernet_hdr->payload );
+					switch(arp_hdr->op_code) {
+						case ARP_BROAD_REQ:
+							process_arp_broadcast_request(node, interface, ethernet_hdr);
+						break;
+						case ARP_REPLY:
+							process_arp_reply_msg(node, interface, ethernet_hdr);			
+						break;
+					}
+			
+				}
 				break;
-				case ARP_REPLY:
-					process_arp_reply_msg(node, interface, ethernet_hdr);			
-				break;
+				default: 
+					//promote_pkt_to_layer3(node, interface, pkt, pkt_size);
+					break;
 			}
-	
+		} 
+		else if( IF_L2_MODE(interface) == ACCESS || IF_L2_MODE(interface) == TRUNK ) {
+			l2_switch_recv_frame(interface, pkt, pkt_size);
+			
 		}
-		break;
-		default: 
-			promote_pkt_to_layer3(node, interface, pkt, pkt_size);
-			break;
-	}
+
 }
 
 void
@@ -243,7 +253,7 @@ arp_table_update_from_arp_reply(arp_table_t *arp_table, arp_hdr_t *arp_hdr, inte
 	assert(arp_hdr->op_code == ARP_REPLY);
 	arp_entry_t *arp_entry = calloc(1,sizeof(arp_entry_t));
 	src_ip = htonl(arp_hdr->src_ip);
-	inet_ntop(AF_INET, &src_ip, &arp_entry->ip_addr.ip_val, 16);
+	inet_ntop(AF_INET, &src_ip, arp_entry->ip_addr.ip_val, 16);
 	arp_entry->ip_addr.ip_val[15] = '\0';
 	memcpy(arp_entry->mac_addr.mac_val, arp_hdr->src_mac.mac_val, sizeof(mac_addr_t));
 	strncpy(arp_entry->oif_name, iif->if_name, IF_NAME_SIZE);
@@ -272,3 +282,23 @@ dump_arp_table(arp_table_t *arp_table){
 			arp_entry->oif_name);
 		} ITERATE_GLTHREAD_END(&arp_table->arp_entries, curr);
 }
+
+
+void 
+interface_set_l2_mode(node_t *node, interface_t *intf, /* char* */intf_l2_mode_t mode) {
+
+	intf->intf_nw_props.intf_l2_mode = mode;
+}
+
+
+/*APIs to be used to create topology*/
+void
+node_set_intf_l2_mode(node_t *node, char *intf_name,
+						intf_l2_mode_t intf_l2_mode) {
+	
+	interface_t *interface = get_node_if_by_name(node, intf_name);
+	assert(interface);
+	interface_set_l2_mode(node, interface, intf_l2_mode /*intf_l2_mode_str(intf_l2_mode)*/);
+}
+
+

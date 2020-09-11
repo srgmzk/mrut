@@ -21,6 +21,7 @@
 #include "CommandParser/cmdtlv.h"
 #include "cmdcodes.h"
 #include "graph.h"
+#include "Layer2/layer2.h"
 #include <stdio.h>
 
 extern graph_t *topo;

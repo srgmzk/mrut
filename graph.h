@@ -16,6 +16,7 @@
 #define NODE_NAME_SIZE		16
 #define IF_NAME_SIZE		16
 #define MAX_INTF_PER_NODE 	10
+#define MAC_ADDR_SIZE		18
 
 #define container_of(ptr, type, member) ({ \
 	const typeof( ((type *)0)->member ) *__mptr = (ptr); \
@@ -95,6 +96,7 @@ static inline interface_t *
 get_node_if_by_name(node_t *node, char *if_name) {
 	int i = 0;
 	while (i < MAX_INTF_PER_NODE ) {
+		
 		if (strcmp(node->intf[i]->if_name, if_name) == 0) 
 			return node->intf[i];
 		i++;
